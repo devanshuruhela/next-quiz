@@ -14,7 +14,7 @@ export default function Home() {
       <p className="text-red-500 font-extrabold text-[25px]">Quiz</p>
     </div>
 
-    <button className="py-2 px-[100px] bg-red-500 text-white text-[18px] font-extrabold rounded-3xl mb-5 hover:bg-red-700" onClick={()=>router.push('/quiz')}>Start</button>
+    <button className="py-2 px-[100px] bg-red-500 text-white text-[18px] font-extrabold rounded-3xl mb-5 hover:bg-red-600" onClick={()=>router.push('/quiz')}>Start</button>
    </div>
   )
 }
