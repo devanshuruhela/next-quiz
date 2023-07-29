@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 
 export async function POST(req:Request) {
 
-    const { id, answer }:any = await req.json();
+    const { questionId, answer }:any = await req.json();
 
     // Find the question by ID
-    const question = quiz.questions.find((q) => q.id === id);
+    const question = quiz.questions.find((q) => q.id === questionId);
 
     if (!question) {
       return NextResponse.json({ message: "Question not found" });
@@ -16,7 +16,7 @@ export async function POST(req:Request) {
       // Check if the answer is correct
       const isCorrect = question.correctAnswer === answer;
 
-      return NextResponse.json({ isCorrect });
+      return NextResponse.json({ isCorrect , questionId });
     }
   }
 

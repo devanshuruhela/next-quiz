@@ -1,11 +1,36 @@
 'use client'
 import Image from 'next/image';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
 import { useRouter } from 'next/navigation';
 
-const ResultPage = () => {
+const ResultPage = ({response}:any) => {
+  const [result , setResult] = useState({
+    "correctAnswers": '',
+    "wrongAnswers": '',
+    "scorePercentage": ''
+})
+
+
+  const fetchResult = async()=>
+  {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/getResult`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        answers:response
+      }),
+    });
+    const data = await res.json();
+    setResult(data)
+  }
+  useEffect(() => {
+    fetchResult()
+  }, [])
+  
   const router = useRouter();
   return (
     <div className="w-[320px] h-[640px] bg-violet-400 rounded-lg relative overflow-hidden ">
@@ -29,8 +54,8 @@ const ResultPage = () => {
         </p>
         <div className="w-[150px] h-[150px] absolute top-[5rem] left-1/2 transform -translate-x-1/2">
           <CircularProgressbar
-            value={20}
-            text={`${20}%`}
+            value={result.scorePercentage}
+            text={`${result.scorePercentage}%`}
             circleRatio={0.75}
             styles={buildStyles({
               rotation: 1 / 2 + 1 / 8,
@@ -50,7 +75,7 @@ const ResultPage = () => {
               height="10"
               viewBox="0 0 32 32"
               fill="none"
-              className='mt-1'
+              className="mt-1"
             >
               <path
                 fill-rule="evenodd"
@@ -59,7 +84,7 @@ const ResultPage = () => {
                 fill="#44B77B"
               />
             </svg>
-            <h2 className='text-[12px]'>3</h2>
+            <h2 className="text-[12px]">{result.correctAnswers}</h2>
             <h2 className="text-[12px] text-gray-400">Correct</h2>
           </div>
           <div className="flex flex-row gap-5 py-4 px-10 bg-[#FF3B3F]/10 rounded-lg text-black">
@@ -78,7 +103,7 @@ const ResultPage = () => {
                 fill="#FF3B3F"
               />
             </svg>
-            <h2 className='text-[12px]'>2</h2>
+            <h2 className="text-[12px]">{result.wrongAnswers}</h2>
             <h2 className="text-[12px] text-gray-400">Incorrect</h2>
           </div>
         </div>

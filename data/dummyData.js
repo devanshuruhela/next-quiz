@@ -33,6 +33,20 @@ export const quiz = {
       imageLink: "", // Add image link here if there is an image related to this question
     },
     {
+      id: 6,
+      question:
+        "How do you judge what should be added in the next version of the app?",
+      answers: [
+        "Data Analysis",
+        "User’s feedback",
+        "Copy from similar product",
+        "Personal feeling",
+      ],
+      correctAnswer: "User’s feedback",
+      imageLink:
+        "/qimage.png",
+    },
+    {
       id: 4,
       question: "What does RACI stand for in project management?",
       answers: [
@@ -50,19 +64,6 @@ export const quiz = {
         "Which type of project organization structure involves the least amount of hierarchy?",
       answers: ["Functional", "Matrix", "Projectized", "Composite"],
       correctAnswer: "Projectized",
-      imageLink: "", // Add image link here if there is an image related to this question
-    },
-    {
-      id: 6,
-      question:
-        "Identify the communication model that involves the highest level of information flow?",
-      answers: [
-        "Upward communication",
-        "Downward communication",
-        "Horizontal communication",
-        "Diagonal communication",
-      ],
-      correctAnswer: "Diagonal communication",
       imageLink: "", // Add image link here if there is an image related to this question
     },
   ],

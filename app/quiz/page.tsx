@@ -6,10 +6,11 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
 // import { quiz } from "../../data/dummyData"; // your dummy data
 import { useRouter } from 'next/navigation';
+import ResultPage from '../result/page';
 
  interface ResponseItem {
      questionId: string; 
-     answer: string;
+     isCorrect: string;
    }
 
 
@@ -20,6 +21,7 @@ const QuizPage = () => {
   
    const [activeQuestion, setActiveQuestion] = useState(0);
    const [selectedAnswer, setSelectedAnswer] = useState('');
+   const [showResult, setShowResult] = useState(false);
    const [checked, setChecked] = useState(false);
    const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
    const [response, setResponse] = useState<ResponseItem[]>([]);
@@ -53,13 +55,25 @@ const QuizPage = () => {
     setSelectedAnswerIndex(idx);
     setSelectedAnswer(answer); 
   };
-  const nextQuestion = () => {
-    const currentQuestionId = quizData?.questions[activeQuestion]?.id;
+  const nextQuestion = async() => {
+    const CurrentQuestionId = quizData?.questions[activeQuestion]?.id;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/checkAnswer`,{method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({questionId:CurrentQuestionId , answer:selectedAnswer }),
+      }
+      
+    );
+    const data =  await res.json()
+    // console.log('iscorrect', data)
+    
     setResponse([
       ...response,
       {
-        questionId: currentQuestionId,
-        answer: selectedAnswer,
+        questionId: CurrentQuestionId,
+        isCorrect: data?.isCorrect,
       },
     ]);
  
@@ -68,15 +82,18 @@ const QuizPage = () => {
       setActiveQuestion((prev) => prev + 1);
     } else {
       setActiveQuestion(0);
-      router.push('result')
+      setShowResult(true);
     }
     setChecked(false);
   };
 
+  console.log(response)
+
   const {questions} = quizData
-  const { question, answers } = questions[activeQuestion];
+  const { question, answers, imageLink } = questions[activeQuestion];
   return (
-    <div className="w-[320px] h-[640px] bg-violet-400 rounded-lg relative overflow-hidden">
+    <div>
+    {!showResult ? (<div className="w-[320px] h-[640px] bg-violet-400 rounded-lg relative overflow-hidden">
       <div className="absolute flex flex-row -top-10 left-5">
         <Image
           src="/confetti.png"
@@ -108,10 +125,13 @@ const QuizPage = () => {
           })}
         />
       </div>
-      <div className="w-[320px] h-[550px] bg-white bottom-0 absolute rounded-b-lg rounded-t-3xl overflow-hidden">
+      <div className="w-[320px] h-[550px] bg-white bottom-0 absolute rounded-b-lg rounded-t-3xl overflow-y-auto overflow-x-hidden">
         <div className="font-black text-black text-[18px] mt-10 ml-5 mr-5 mb-5 break-words">
           {question}
+          
+          {imageLink? <Image src={imageLink} alt='quimage' width={300} height={300}/>:null}
         </div>
+
         <div className="bottom-0 flex flex-col items-center justify-center gap-2">
           {answers.map((answer: any, idx: any) => (
             <div key={idx} onClick={() => onAnswerSelected(answer, idx)}>
@@ -147,7 +167,10 @@ const QuizPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </div>):
+  (
+    <ResultPage response={response}/>
+  )}</div>
   );
 }
 
