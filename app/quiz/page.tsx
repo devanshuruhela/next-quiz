@@ -4,27 +4,32 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
-import { quiz } from "../../data/dummyData"; // your dummy data
+// import { quiz } from "../../data/dummyData"; // your dummy data
 import { useRouter } from 'next/navigation';
 
+ interface ResponseItem {
+     questionId: string; 
+     answer: string;
+   }
 
+
+   
 const QuizPage = () => {
    const router = useRouter()
-   const [quizData , setQuizData] = useState([])
+  
+  
    const [activeQuestion, setActiveQuestion] = useState(0);
    const [selectedAnswer, setSelectedAnswer] = useState('');
    const [checked, setChecked] = useState(false);
    const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
-   const [response , setResponse] =useState([])
-
-    useEffect(() => {
-      // Fetching quiz data when the component mounts
-      fetchQuizData();
-    }, []);
-
-    const fetchQuizData = async () => {
+   const [response, setResponse] = useState<ResponseItem[]>([]);
+   const [quizData , setQuizData] = useState({
+  totalQuestions: 6,
+  questions: [
+    ]})
+   const fetchQuizData = async () => {
       try {
-        const response = await fetch(`${process.env.BASE_URL}/startQuiz`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/startQuiz`);
         const data = await response.json();
         setQuizData(data);
       } catch (error) {
@@ -32,14 +37,34 @@ const QuizPage = () => {
       }
     };
    
+    useEffect(() => {
+      // Fetching quiz data when the component mounts
+      fetchQuizData();
+    }, []);
+    
+   if (quizData.questions.length === 0) {
+     return <div className=' border-2 border-black h-[200px] w-[200px]  text-black rounded-full text-[18px] flex flex-col justify-center items-center text-extrabold bg-slate-500/20'>
+      <p>Loading...</p></div>; 
+   }
+    
+   
   const onAnswerSelected = (answer:any, idx:any) => {
     setChecked(true);
     setSelectedAnswerIndex(idx);
     setSelectedAnswer(answer); 
   };
   const nextQuestion = () => {
+    const currentQuestionId = quizData?.questions[activeQuestion]?.id;
+    setResponse([
+      ...response,
+      {
+        questionId: currentQuestionId,
+        answer: selectedAnswer,
+      },
+    ]);
+ 
     setSelectedAnswerIndex(null);
-    if (activeQuestion !== quiz.totalQuestions - 1) {
+    if (activeQuestion !== quizData.totalQuestions - 1) {
       setActiveQuestion((prev) => prev + 1);
     } else {
       setActiveQuestion(0);
@@ -48,7 +73,7 @@ const QuizPage = () => {
     setChecked(false);
   };
 
-  const {questions} = quiz
+  const {questions} = quizData
   const { question, answers } = questions[activeQuestion];
   return (
     <div className="w-[320px] h-[640px] bg-violet-400 rounded-lg relative overflow-hidden">
@@ -71,8 +96,8 @@ const QuizPage = () => {
         style={{ zIndex: 5 }}
       >
         <CircularProgressbar
-          value={((activeQuestion + 1) / quiz.totalQuestions) * 100}
-          text={`${activeQuestion + 1}/${quiz.totalQuestions}`}
+          value={((activeQuestion + 1) / quizData.totalQuestions) * 100}
+          text={`${activeQuestion + 1}/${quizData.totalQuestions}`}
           background
           backgroundPadding={8}
           styles={buildStyles({
@@ -88,7 +113,7 @@ const QuizPage = () => {
           {question}
         </div>
         <div className="bottom-0 flex flex-col items-center justify-center gap-2">
-          {answers.map((answer, idx) => (
+          {answers.map((answer: any, idx: any) => (
             <div key={idx} onClick={() => onAnswerSelected(answer, idx)}>
               {selectedAnswerIndex === idx ? (
                 <AnswerSelector text={answer} selected={true} />
@@ -100,18 +125,24 @@ const QuizPage = () => {
           {checked ? (
             <button
               onClick={nextQuestion}
-              className="px-5 py-2 w-[200px] z-5 text-white bg-red-500 rounded-3xl mt-5"
+              className="px-5 py-2 w-[200px] z-5 text-white bg-red-500 rounded-3xl mt-5 fixed bottom-[50px]"
+              style={{ zIndex: 10 }}
             >
-              {activeQuestion === quiz.totalQuestions - 1 ? "Finish" : "Next"}
+              {activeQuestion === quizData.totalQuestions - 1
+                ? "Finish"
+                : "Next"}
             </button>
           ) : (
             <button
               onClick={nextQuestion}
               disabled
-              className="px-5 py-2 w-[200px] z-5 text-white bg-gray-500 rounded-3xl mt-5"
+              className="px-5 py-2 w-[200px] z-5 text-white bg-gray-500 rounded-3xl mt-5 fixed bottom-[50px]"
+              style={{ zIndex: 10 }}
             >
               {" "}
-              {activeQuestion === quiz.totalQuestions - 1 ? "Finish" : "Next"}
+              {activeQuestion === quizData.totalQuestions - 1
+                ? "Finish"
+                : "Next"}
             </button>
           )}
         </div>

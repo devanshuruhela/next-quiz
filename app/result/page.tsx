@@ -42,9 +42,52 @@ const ResultPage = () => {
             })}
           />
         </div>
+        <div className="absolute flex flex-col gap-2 w-[300px] top-[15rem]">
+          <div className="flex flex-row gap-5 py-4 bg-[#44B77B]/10 text-black rounded-lg px-10">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="10"
+              viewBox="0 0 32 32"
+              fill="none"
+              className='mt-1'
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z"
+                fill="#44B77B"
+              />
+            </svg>
+            <h2 className='text-[12px]'>3</h2>
+            <h2 className="text-[12px] text-gray-400">Correct</h2>
+          </div>
+          <div className="flex flex-row gap-5 py-4 px-10 bg-[#FF3B3F]/10 rounded-lg text-black">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="10"
+              viewBox="0 0 32 32"
+              fill="none"
+              className="mt-1"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z"
+                fill="#FF3B3F"
+              />
+            </svg>
+            <h2 className='text-[12px]'>2</h2>
+            <h2 className="text-[12px] text-gray-400">Incorrect</h2>
+          </div>
+        </div>
       </div>
-      <button className="px-5 py-2 w-[200px] z-5 text-white bg-red-500 rounded-3xl mt-5 absolute bottom-4 left-1/2 transform -translate-x-1/2" onClick={()=>router.push('/')}>
-        Restart
+      <button
+        className="px-5 py-2 w-[200px] z-5 text-white bg-red-500 rounded-3xl mt-5 absolute bottom-4 left-1/2 transform -translate-x-1/2"
+        onClick={() => router.push("/")}
+      >
+        Start Again
       </button>
     </div>
   );
