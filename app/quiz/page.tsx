@@ -4,20 +4,17 @@ import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
-// import { quiz } from "../../data/dummyData"; // your dummy data
-import { useRouter } from 'next/navigation';
+
 import ResultPage from '../result/page';
 
  interface ResponseItem {
-     questionId: string; 
+     questionId: number; 
      isCorrect: string;
    }
 
 
    
 const QuizPage = () => {
-   const router = useRouter()
-  
   
    const [activeQuestion, setActiveQuestion] = useState(0);
    const [selectedAnswer, setSelectedAnswer] = useState('');
@@ -25,10 +22,18 @@ const QuizPage = () => {
    const [checked, setChecked] = useState(false);
    const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
    const [response, setResponse] = useState<ResponseItem[]>([]);
-   const [quizData , setQuizData] = useState({
-  totalQuestions: 6,
-  questions: [
-    ]})
+   const [quizData, setQuizData] = useState({
+     totalQuestions: 0,
+     questions: [
+       {
+         id: 0,
+         question: "",
+         answers: [],
+         correctAnswer: "",
+         imageLink: "",
+       },
+     ],
+   });
    const fetchQuizData = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/startQuiz`);
@@ -44,7 +49,7 @@ const QuizPage = () => {
       fetchQuizData();
     }, []);
     
-   if (quizData.questions.length === 0) {
+   if (quizData.totalQuestions === 0) {
      return <div className=' border-2 border-black h-[200px] w-[200px]  text-black rounded-full text-[18px] flex flex-col justify-center items-center text-extrabold bg-slate-500/20'>
       <p>Loading...</p></div>; 
    }
@@ -67,7 +72,6 @@ const QuizPage = () => {
       
     );
     const data =  await res.json()
-    // console.log('iscorrect', data)
     
     setResponse([
       ...response,

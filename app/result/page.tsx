@@ -54,7 +54,7 @@ const ResultPage = ({response}:any) => {
         </p>
         <div className="w-[150px] h-[150px] absolute top-[5rem] left-1/2 transform -translate-x-1/2">
           <CircularProgressbar
-            value={result.scorePercentage}
+            value={parseInt(result.scorePercentage)}
             text={`${result.scorePercentage}%`}
             circleRatio={0.75}
             styles={buildStyles({
