@@ -5,9 +5,11 @@ import React, { useState } from 'react'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
 import { quiz } from "../../data/dummyData"; // your dummy data
+import { useRouter } from 'next/navigation';
 
 
 const QuizPage = () => {
+   const router = useRouter()
    const [activeQuestion, setActiveQuestion] = useState(0);
    const [selectedAnswer, setSelectedAnswer] = useState(false);
    const [checked, setChecked] = useState(false);
@@ -32,6 +34,7 @@ const QuizPage = () => {
     } else {
       setActiveQuestion(0);
       setShowResult(true);
+      router.push('result')
     }
     setChecked(false);
   };
@@ -40,11 +43,17 @@ const QuizPage = () => {
   const { question, answers, correctAnswer } = questions[activeQuestion];
   return (
     <div className="w-[320px] h-[640px] bg-violet-400 rounded-lg relative overflow-hidden">
-      <div className="absolute -top-10 left-9">
+      <div className="absolute flex flex-row -top-10 left-5">
         <Image
           src="/confetti.png"
-          height={200}
-          width={250}
+          height={100}
+          width={150}
+          alt="confetti particales"
+        />
+        <Image
+          src="/confetti.png"
+          height={100}
+          width={150}
           alt="confetti particales"
         />
       </div>
@@ -70,8 +79,6 @@ const QuizPage = () => {
           {question}
         </div>
         <div className="bottom-0 flex flex-col items-center justify-center gap-2">
-          
-
           {answers.map((answer, idx) => (
             <div key={idx} onClick={() => onAnswerSelected(answer, idx)}>
               {selectedAnswerIndex === idx ? (
