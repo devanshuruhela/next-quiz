@@ -1,7 +1,7 @@
 'use client'
 import AnswerSelector from '@/components/answerselector';
 import Image from 'next/image';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import "react-circular-progressbar/dist/styles.css";
 import { quiz } from "../../data/dummyData"; // your dummy data
@@ -10,22 +10,32 @@ import { useRouter } from 'next/navigation';
 
 const QuizPage = () => {
    const router = useRouter()
+   const [quizData , setQuizData] = useState([])
    const [activeQuestion, setActiveQuestion] = useState(0);
-   const [selectedAnswer, setSelectedAnswer] = useState(false);
+   const [selectedAnswer, setSelectedAnswer] = useState('');
    const [checked, setChecked] = useState(false);
    const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
-   const [showResult, setShowResult] = useState(false);
+   const [response , setResponse] =useState([])
+
+    useEffect(() => {
+      // Fetching quiz data when the component mounts
+      fetchQuizData();
+    }, []);
+
+    const fetchQuizData = async () => {
+      try {
+        const response = await fetch(`${process.env.BASE_URL}/startQuiz`);
+        const data = await response.json();
+        setQuizData(data);
+      } catch (error) {
+        console.error("Error fetching quiz data:", error);
+      }
+    };
    
   const onAnswerSelected = (answer:any, idx:any) => {
     setChecked(true);
     setSelectedAnswerIndex(idx);
-    if (answer === correctAnswer) {
-      setSelectedAnswer(true);
-      console.log("true");
-    } else {
-      setSelectedAnswer(false);
-      console.log("false");
-    }
+    setSelectedAnswer(answer); 
   };
   const nextQuestion = () => {
     setSelectedAnswerIndex(null);
@@ -33,14 +43,13 @@ const QuizPage = () => {
       setActiveQuestion((prev) => prev + 1);
     } else {
       setActiveQuestion(0);
-      setShowResult(true);
       router.push('result')
     }
     setChecked(false);
   };
 
   const {questions} = quiz
-  const { question, answers, correctAnswer } = questions[activeQuestion];
+  const { question, answers } = questions[activeQuestion];
   return (
     <div className="w-[320px] h-[640px] bg-violet-400 rounded-lg relative overflow-hidden">
       <div className="absolute flex flex-row -top-10 left-5">
