@@ -16,7 +16,7 @@ export async function POST(req:Request) {
       if (question && answer.isTimeOk === true && answer.isCorrect === true  ) {
         correctAnswers++;
       }
-      if (question && answer.isTimeOk === false ) {
+      if (question && answer.isTimeOk === false && answer.isCorrect === true) {
         timelimiteexceeded++;
       }
       if (question  && answer.isCorrect === false  ) {
