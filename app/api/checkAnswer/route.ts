@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req:Request) {
 
-    const { questionId, answer }:any = await req.json();
+    const { questionId, answer, timetaken }:any = await req.json();
 
     // Find the question by ID
     const question = quiz.questions.find((q) => q.id === questionId);
@@ -15,8 +15,9 @@ export async function POST(req:Request) {
     } else {
       // Check if the answer is correct
       const isCorrect = question.correctAnswer === answer;
+     const isTimeOk = parseInt(timetaken) > 5.0 ? false : true;
 
-      return NextResponse.json({ isCorrect , questionId });
+      return NextResponse.json({ isCorrect , questionId, isTimeOk });
     }
   }
 

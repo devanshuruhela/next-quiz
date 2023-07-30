@@ -10,12 +10,18 @@ import ResultPage from '../result/page';
  interface ResponseItem {
      questionId: number; 
      isCorrect: string;
+     isTimeOk: any
    }
 
 
    
 const QuizPage = () => {
-  
+
+   const [totalTimeTaken, setTotalTimeTaken] = useState<number>(0);
+   const [questionStartTime, setQuestionStartTime] = useState<number>(0);
+   const [questionEndTime, setQuestionEndTime] = useState<number>(0);
+
+
    const [activeQuestion, setActiveQuestion] = useState(0);
    const [selectedAnswer, setSelectedAnswer] = useState('');
    const [showResult, setShowResult] = useState(false);
@@ -34,6 +40,7 @@ const QuizPage = () => {
        },
      ],
    });
+
    const fetchQuizData = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/startQuiz`);
@@ -44,11 +51,27 @@ const QuizPage = () => {
       }
     };
    
-    useEffect(() => {
-      // Fetching quiz data when the component mounts
-      fetchQuizData();
-    }, []);
-    
+ useEffect(() => {
+   // Fetching quiz data when the component mounts
+   fetchQuizData();
+
+   // Set the start time for the first question
+   setQuestionStartTime(Date.now());
+
+   // Clean up function to set the end time for the last question
+   return () => {
+     if (activeQuestion === quizData.totalQuestions - 1) {
+       setQuestionEndTime(Date.now());
+
+       // Calculate time taken for the last question and update the total time taken
+       const timeTakenForLastQuestion = questionEndTime - questionStartTime;
+       setTotalTimeTaken(
+         (prevTotalTime) => prevTotalTime + timeTakenForLastQuestion
+       );
+     }
+   };
+ }, [activeQuestion, questionEndTime]);
+
    if (quizData.totalQuestions === 0) {
      return <div className=' border-2 border-black h-[200px] w-[200px]  text-black rounded-full text-[18px] flex flex-col justify-center items-center text-extrabold bg-slate-500/20'>
       <p>Loading...</p></div>; 
@@ -59,25 +82,34 @@ const QuizPage = () => {
     setChecked(true);
     setSelectedAnswerIndex(idx);
     setSelectedAnswer(answer); 
-  };
+  }; 
+
   const nextQuestion = async() => {
+    const currentTime = Date.now();
+    const timeTakenForCurrentQuestion = currentTime - questionStartTime;
+   
     const CurrentQuestionId = quizData?.questions[activeQuestion]?.id;
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/checkAnswer`,{method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({questionId:CurrentQuestionId , answer:selectedAnswer }),
-      }
-      
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/checkAnswer`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        questionId: CurrentQuestionId,
+        answer: selectedAnswer,
+        timetaken: timeTakenForCurrentQuestion / 1000,
+      }),
+    });
     const data =  await res.json()
+    // console.log(data.isCorrect , data.isTimeOk);
+    
     
     setResponse([
       ...response,
       {
         questionId: CurrentQuestionId,
         isCorrect: data?.isCorrect,
+        isTimeOk: data?.isTimeOk
       },
     ]);
  
@@ -89,12 +121,14 @@ const QuizPage = () => {
       setShowResult(true);
     }
     setChecked(false);
+    
   };
-
-  console.log(response)
 
   const {questions} = quizData
   const { question, answers, imageLink } = questions[activeQuestion];
+  // const timeTakenForCurrentQuestion = Date.now() - questionStartTime;
+  
+  
   return (
     <div>
     {!showResult ? (<div className="w-[320px] h-[640px] bg-violet-400 rounded-lg relative overflow-hidden">
@@ -149,7 +183,7 @@ const QuizPage = () => {
           {checked ? (
             <button
               onClick={nextQuestion}
-              className="px-5 py-2 w-[200px] z-5 text-white bg-red-500 rounded-3xl mt-5 fixed bottom-[50px]"
+              className="px-5 py-2 w-[200px] z-5 text-white bg-red-500 rounded-3xl mt-5 fixed bottom-[60px]"
               style={{ zIndex: 10 }}
             >
               {activeQuestion === quizData.totalQuestions - 1
@@ -160,7 +194,7 @@ const QuizPage = () => {
             <button
               onClick={nextQuestion}
               disabled
-              className="px-5 py-2 w-[200px] z-5 text-white bg-gray-500 rounded-3xl mt-5 fixed bottom-[50px]"
+              className="px-5 py-2 w-[200px] z-5 text-white bg-gray-500 rounded-3xl mt-5 fixed bottom-[60px]"
               style={{ zIndex: 10 }}
             >
               {" "}

@@ -9,7 +9,8 @@ const ResultPage = ({response}:any) => {
   const [result , setResult] = useState({
     "correctAnswers": '',
     "wrongAnswers": '',
-    "scorePercentage": ''
+    "scorePercentage": '',
+    "timelimiteexceeded":''
 })
 
 
@@ -78,8 +79,8 @@ const ResultPage = ({response}:any) => {
               className="mt-1"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z"
                 fill="#44B77B"
               />
@@ -97,14 +98,33 @@ const ResultPage = ({response}:any) => {
               className="mt-1"
             >
               <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
+                fillRule="evenodd"
+                clipRule="evenodd"
                 d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z"
                 fill="#FF3B3F"
               />
             </svg>
             <h2 className="text-[12px]">{result.wrongAnswers}</h2>
             <h2 className="text-[12px] text-gray-400">Incorrect</h2>
+          </div>
+          <div className="flex flex-row gap-5 px-10 py-4 text-black bg-gray-100 rounded-lg">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="10"
+              viewBox="0 0 32 32"
+              fill="none"
+              className="mt-1"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M16 32C24.8366 32 32 24.8366 32 16C32 7.16344 24.8366 0 16 0C7.16344 0 0 7.16344 0 16C0 24.8366 7.16344 32 16 32Z"
+                fill="#565656"
+              />
+            </svg>
+            <h2 className="text-[12px]">{result.timelimiteexceeded}</h2>
+            <h2 className="text-[12px] text-gray-400">Time limit exceeded</h2>
           </div>
         </div>
       </div>
